@@ -54,13 +54,20 @@ def update_category(category_name: str, new_name: str) -> None:
     Database().session.commit()
 
 
-def update_promocode(code: str, discount: int | None = None, expires_at: str | None = None) -> None:
-    """Update promo code discount or expiry date."""
+def update_promocode(
+    code: str,
+    discount: int | None = None,
+    expires_at: str | None = None,
+    active: bool | None = None,
+) -> None:
+    """Update promo code discount, expiry date or activity."""
     values = {}
     if discount is not None:
         values[PromoCode.discount] = discount
     if expires_at is not None or expires_at is None:
         values[PromoCode.expires_at] = expires_at
+    if active is not None:
+        values[PromoCode.active] = active
     if not values:
         return
     Database().session.query(PromoCode).filter(PromoCode.code == code).update(values=values)
