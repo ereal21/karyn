@@ -23,6 +23,7 @@ from bot.database.methods import (
     select_unfinished_operations, get_user_referral, finish_operation, update_balance, create_operation,
     bought_items_list, check_value, get_subcategories, get_category_parent, get_user_language, update_user_language,
     get_unfinished_operation, get_promocode, mark_promocode_used, is_promocode_used
+    get_unfinished_operation, get_promocode, update_promocode
 )
 from bot.handlers.other import get_bot_user_ids, get_bot_info
 from bot.keyboards import (
@@ -642,6 +643,7 @@ async def process_promo_code(message: Message):
         new_price = round(price * (100 - discount) / 100, 2)
         TgConfig.STATE[f'{user_id}_price'] = new_price
         mark_promocode_used(user_id, code, item_name)
+        update_promocode(code, active=False)
         text = t(lang, 'promo_applied', price=new_price)
     else:
         text = t(lang, 'promo_invalid')
