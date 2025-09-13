@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import Column, Integer, String, BigInteger, ForeignKey, Text, Boolean, VARCHAR
+from sqlalchemy import Column, Integer, String, BigInteger, ForeignKey, Text, Boolean, VARCHAR, UniqueConstraint
 from bot.database.main import Database
 from sqlalchemy.orm import relationship
 
@@ -205,6 +205,22 @@ class PromoCode(Database.BASE):
         self.discount = discount
         self.expires_at = expires_at
         self.active = active
+
+
+class UsedPromoCode(Database.BASE):
+    __tablename__ = 'used_promo_codes'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(BigInteger, ForeignKey('users.telegram_id'), nullable=False)
+    code = Column(String(50), nullable=False)
+    item_name = Column(String(100), nullable=False)
+    __table_args__ = (
+        UniqueConstraint('user_id', 'code', 'item_name', name='_user_code_item_uc'),
+    )
+
+    def __init__(self, user_id: int, code: str, item_name: str):
+        self.user_id = user_id
+        self.code = code
+        self.item_name = item_name
 
 
 def register_models():

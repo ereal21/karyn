@@ -1,7 +1,7 @@
 import sqlalchemy.exc
 import random
 from bot.database.models import User, ItemValues, Goods, Categories, BoughtGoods, \
-    Operations, UnfinishedOperations, PromoCode
+    Operations, UnfinishedOperations, PromoCode, UsedPromoCode
 from bot.database import Database
 
 
@@ -81,4 +81,10 @@ def add_bought_item(item_name: str, value: str, price: int, buyer_id: int,
 def create_promocode(code: str, discount: int, expires_at: str | None) -> None:
     session = Database().session
     session.add(PromoCode(code=code, discount=discount, expires_at=expires_at, active=True))
+    session.commit()
+
+
+def mark_promocode_used(user_id: int, code: str, item_name: str) -> None:
+    session = Database().session
+    session.add(UsedPromoCode(user_id=user_id, code=code, item_name=item_name))
     session.commit()
